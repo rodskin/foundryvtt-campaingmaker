@@ -95,7 +95,7 @@
         </div>
 		<br />
 		<div><a href="http://ko-fi.com/rodskin" target="_blank">you can buy me a coffee :)</a></div><br />
-		<div><a href="https://foundryvtt.com/" target="_blank">Foundry Virtual Tabletop site</a></div>
+		<div><a href="https://foundryvtt.com/" target="_blank">Foundry Virtual Tabletop Official Site</a></div>
     </body>
 </html>
 <?php
