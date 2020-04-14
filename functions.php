@@ -108,7 +108,7 @@
 				}
 			}
 		}
-		$module_tmp_pack = substr($module_file, 0, -1);
+		$module_tmp_pack = substr($module_tmp_pack, 0, -1);
 		$module_file .= $module_tmp_pack;
 		$module_file .= '
   ]

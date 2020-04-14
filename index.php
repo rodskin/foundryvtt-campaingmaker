@@ -46,20 +46,20 @@
 	$default_packs = get_default_packs();
 	$packs_entities = get_packs_entities();
 ?>
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html>
     <head>
         <meta charset="UTF-8">
-        <title>FoundryVTT Campaign module maker</title>
+        <title>FoundryVTT Module Maker</title>
 		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     </head>
 
     <body>
-        <h1>Welcome to the Foundry Virtual Tabletop Campaign maker</h1>
+        <h1>Welcome to the Foundry Virtual Tabletop Module maker</h1>
 		<h3>Using version <strong><?php echo $min_version; ?></strong></h3>
 		<div>
-			This is a plugin creator to save or export your campaigns / characters etc
-			you will find in you module a skeleton of folders for your ressources:
+			This is a plugin creator to save or export your characters, items, scenes, journal entries etc...
+			You will find in your downloaded module a skeleton of folders for all your ressources:
 			
 			<pre style="background-color:#F6F7F8; padding: 10px;">
 + YOUR_MODULE/
@@ -79,11 +79,11 @@
 				<input type="hidden" id="hid_packs_number" value="<?php echo count($default_packs); ?>" />
 				<fieldset>
 					<legend>Module Informations:</legend>
-					<input type="text" name="campaign_name" placeholder="Insert your campaign name *" required="required" style="width: 300px;" /><br />
+					<input type="text" name="campaign_name" placeholder="Insert your module name *" required="required" style="width: 300px;" /><br />
 					<input type="text" name="creator_name" placeholder="Insert your name *" required="required" style="width: 300px;" /><br />
 					<input type="text" name="creator_url" placeholder="Insert your site url" style="width: 300px;" /><br />
 					<input type="text" name="compatible_core_version" placeholder="Compatible Core Version" style="width: 300px;" /><br />
-					<textarea name="campaign_description" placeholder="campaign description" style="width: 500px; height: 200px;"></textarea>
+					<textarea name="campaign_description" placeholder="Module description" style="width: 500px; height: 200px;"></textarea>
 				</fieldset>
 				<fieldset>
 					<legend>Module Packs:</legend>
