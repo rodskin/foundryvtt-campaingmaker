@@ -31,6 +31,10 @@
 		mkdir($module_pictures_path);
 		$module_icons_path = $module_ressources_path . '/icons';
 		mkdir($module_icons_path);
+		$module_sounds_path = $module_ressources_path . '/sounds';
+		mkdir($module_sounds_path);
+		$module_musics_path = $module_ressources_path . '/musics';
+		mkdir($module_musics_path);
 		$module_file = create_module_file($options);
 		
 		file_put_contents($module_path . '/module.json', $module_file);
@@ -59,16 +63,35 @@
 
     <body>
         <h1>Welcome to the Foundry Virtual Tabletop Campaign maker</h1>
+		<div>
+			This is a plugin creator to save or export your campaigns / characters etc
+			you will find in you module a skeleton of folders for your ressources:
+			
+			<pre style="background-color:#F6F7F8; padding: 10px;">
++ YOUR_MODULE/
+	+ packs/
+	+ ressources/
+	   + icons/
+	   + musics/
+	   + pictures/
+	   + portraits/
+	   + scenes/
+	   + sounds/
+	   + tokens/
+			</pre>
+		</div>
         <div>
             <form action="" id="campaign_maker_form" method="post">
-                <input type="text" name="creator_name" placeholder="Insert your name *" required="required" /><br />
-                <input type="text" name="creator_url" placeholder="Insert your site url *" required="required" /><br />
-                <input type="text" name="campaign_name" placeholder="Insert your campaign name *" required="required" /><br />
-				<textarea name="campaign_description" placeholder="campaign description *" required="required"></textarea>
+                <input type="text" name="creator_name" placeholder="Insert your name *" required="required" style="width: 300px;" /><br />
+                <input type="text" name="creator_url" placeholder="Insert your site url *" required="required" style="width: 300px;" /><br />
+                <input type="text" name="campaign_name" placeholder="Insert your campaign name *" required="required" style="width: 300px;" /><br />
+				<textarea name="campaign_description" placeholder="campaign description *" required="required" style="width: 300px;"></textarea>
                 <br />
                 <input type="submit" value="create and download module" />
             </form>
-        </div> 
+        </div>
+		<br />
+		<div><a href=" http://ko-fi.com/rodskin" target="_blank">you can buy me a coffee :)</a></div>
     </body>
 </html>
 <?php
@@ -114,7 +137,7 @@
 		$module_file='{   
    "name": "' . $options['module_slug'] . '",   
    "title": "' . $options['campaign_name'] . '",   
-   "description": "' . $options['campaign_description'] . '",   
+   "description": "' . str_replace("\r\n", '<br />', $options['campaign_description']) . '",
    "author": "' . $options['creator_name'] . '",
    "version": "1.0.0",
    "minimumCoreVersion": "0.5.3",
@@ -122,63 +145,77 @@
    "packs": [
     {
       "name": "equipment",
-      "label": "My Equipment",
+      "label": "Equipment",
       "path": "packs/equipment.db",
       "entity": "Item",
       "module": "' . $options['module_slug'] . '"
     },
 	{
       "name": "item",
-      "label": "My Items",
+      "label": "Items",
       "path": "packs/items.db",
       "entity": "Item",
       "module": "' . $options['module_slug'] . '"
     },
     {
       "name": "spells",
-      "label": "My Spells",
+      "label": "Spells",
       "path": "packs/spells.db",
       "entity": "Item",
       "module": "' . $options['module_slug'] . '"
     },
     {
       "name": "weapons",
-      "label": "My Weapons",
+      "label": "Weapons",
       "path": "packs/weapons.db",
       "entity": "Item",
       "module": "' . $options['module_slug'] . '"
     },
 	{
       "name": "players",
-      "label": "My Players",
+      "label": "Players",
       "path": "packs/players.db",
       "entity": "Actor",
       "module": "' . $options['module_slug'] . '"
     },
 	{
       "name": "npc",
-      "label": "My NPCs",
+      "label": "NPCs",
       "path": "packs/npc.db",
       "entity": "Actor",
       "module": "' . $options['module_slug'] . '"
     },
 	{
       "name": "monsters",
-      "label": "My Monsters",
+      "label": "Monsters",
       "path": "packs/monsters.db",
       "entity": "Actor",
       "module": "' . $options['module_slug'] . '"
     },
 	{
       "name": "journals",
-      "label": "My Journals",
+      "label": "Journals",
       "path": "packs/journals.db",
-      "entity": "Item",
+      "entity": "JournalEntry",
+      "module": "' . $options['module_slug'] . '"
+    },
+	{
+      "name": "macros",
+      "label": "Macros",
+      "path": "packs/macros.db",
+      "entity": "Macro",
+      "module": "' . $options['module_slug'] . '"
+    },
+	{
+      "name": "playlists",
+      "label": "Playlists",
+      "path": "packs/playlists.db",
+      "entity": "Playlist",
       "module": "' . $options['module_slug'] . '"
     },
 	{
       "name": "scenes",
-      "label": "My Scenes",
+      "label": "Scenes",
       "path": "packs/scenes.db",
       "entity": "Scene",
       "module": "' . $options['module_slug'] . '"
