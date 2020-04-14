@@ -40,84 +40,97 @@
 		mkdir($tmp_folder);
 		//echo $module_slug;
 		mkdir($module_path);
-		$module_packs_path = $module_path . '/packs';
-		mkdir($module_packs_path);
-		$module_langs_path = $module_path . '/lang';
-		mkdir($module_langs_path);
-		$module_ressources_path = $module_path . '/assets';
-		mkdir($module_ressources_path);
-		$module_scenes_path = $module_ressources_path . '/scenes';
-		mkdir($module_scenes_path);
-		$module_tokens_path = $module_ressources_path . '/tokens';
-		mkdir($module_tokens_path);
-		$module_portraits_path = $module_ressources_path . '/portraits';
-		mkdir($module_portraits_path);
-		$module_pictures_path = $module_ressources_path . '/pictures';
-		mkdir($module_pictures_path);
-		$module_icons_path = $module_ressources_path . '/icons';
-		mkdir($module_icons_path);
-		$module_sounds_path = $module_ressources_path . '/sounds';
-		mkdir($module_sounds_path);
-		$module_musics_path = $module_ressources_path . '/musics';
-		mkdir($module_musics_path);
+		$array_folders_to_create = array(
+			'packs',
+			'lang',
+			'scripts',
+			'templates',
+			'styles',
+			'assets',
+			'assets/scenes',
+			'assets/tokens',
+			'assets/portraits',
+			'assets/pictures',
+			'assets/icons',
+			'assets/sounds',
+			'assets/musics'
+		);
+		
+		foreach ($array_folders_to_create as $folder) {
+			mkdir($module_path . '/' . $folder);
+		}
 	}
-	
 	
 	function create_module_file($options) {
 		$packs_added = array();
-		$module_file='{   
-	"name": "' . $options['module_slug'] . '",   
-	"title": "' . $options['campaign_name'] . '",';
+		$module_array = array();
+		$module_array['name'] = $options['module_slug'];
+		$module_array['title'] = $options['campaign_name'];
 		if (isset($options['campaign_description']) && trim($options['campaign_description']) != '') {
 			$description = str_replace("\r\n", '<br />', $options['campaign_description']);
 			$description = str_replace('"', '\"', $description);
-			//var_dump($description);die();
-			$module_file .= '
-    "description": "' . $description . '",';
-		}
-		$module_file .= '
-	"author": "' . $options['creator_name'] . '",
-	"version": "1.0.0",';
-		if (isset($options['compatible_core_version']) && trim($options['compatible_core_version']) != '') {
-			$module_file .= '
-	"compatibleCoreVersion": "' . $options['compatible_core_version'] . '",';
+			$module_array['description'] = $description;
 		} else {
-			$module_file .= '
-	"compatibleCoreVersion": "' . $options['min_version'] . '",';
+			$module_array['description'] = '';
 		}
-		if (isset($options['creator_url']) && trim($options['creator_url']) != '') {
-			$module_file .= '
-	"url": "' . $options['creator_url'] . '",';
-		}
-		$module_tmp_pack = '';
-		if (isset($options['packs']) && !empty($options['packs'])) {
-			$module_tmp_pack .= '
-	"packs": [';
+		$module_array['author'] = $options['creator_name'];
+		$module_array['version'] = $options['0.0.1'];
+		$module_array['compatibleCoreVersion'] = (isset($options['compatible_core_version']) && trim($options['compatible_core_version']) != '') ? $options['compatible_core_version'] : '';
+		$module_array['minimumCoreVersion'] = $options['minimum_core_version'];
+		$module_array['url'] = (isset($options['creator_url']) && trim($options['creator_url']) != '') ? $options['creator_url'] : '';
+		$module_array['languages'] = languages_for_file();
+		$module_array['scripts'] = scripts_for_file();
+		$module_array['styles'] = styles_for_file();
+		$module_array['esmodules'] = esmodules_for_file;
+		$module_array['packs'] = packs_for_file($options['packs'], $options['module_slug']);
+		$module_array['manifest'] = '';
+		$module_array['download'] = '';
+
+		return json_encode($module_array);
+	}
+	
+	function languages_for_file () {
+		$array_languages = array();
+		// @TODO ?
+		return $array_languages;
+	}
+	
+	function scripts_for_file () {
+		$array_scripts = array();
+		// @TODO ?
+		return $array_scripts;
+	}
+	
+	function styles_for_file () {
+		$array_styles = array();
+		// @TODO ?
+		return $array_styles;
+	}
+	
+	function esmodules_for_file () {
+		$array_esmodules = array();
+		// @TODO ?
+		return $array_esmodules;
+	}
+	
+	function packs_for_file ($packs, $module_slug) {
+		$packs_added = array();
+		$array_packs = array();
+		if (isset($packs) && !empty($packs)) {
 			$available_packs_entities = get_packs_entities();
-			foreach ($options['packs'] as $pack) {
-				if (trim($pack['label']) != '' && trim($pack['entity']) != '' && in_array($pack['entity'], $available_packs_entities)) {
-					$name_clean = urlencode(strtolower(preg_replace(array('/[^a-zA-Z0-9 -]/', '/[ -]+/', '/^-|-$/'), array(' ', '-', ''), remove_accents($pack['label']))));
-					if (trim($name_clean) != '' && array_key_exists($name_clean, $packs_added) == false) {
-						$module_tmp_pack .= '
-	{
-      "name": "' . $name_clean . '",
-      "label": "' . $pack['label'] . '",
-      "path": "packs/' . $name_clean . '.db",
-      "entity": "' . $pack['entity'] . '",
-      "module": "' . $options['module_slug'] . '"
-    },';
-						$packs_added[$name_clean] = $name_clean;
-					}
+			foreach ($packs as $key => $pack) {
+				$name_clean = urlencode(strtolower(preg_replace(array('/[^a-zA-Z0-9 -]/', '/[ -]+/', '/^-|-$/'), array(' ', '-', ''), remove_accents($pack['label']))));
+				if (trim($name_clean) != '' && array_key_exists($name_clean, $packs_added) == false) {
+					$array_packs[$key]['name'] = $name_clean;
+					$array_packs[$key]['label'] = $pack['label'];
+					$array_packs[$key]['path'] = 'packs/' . $name_clean . '.db';
+					$array_packs[$key]['entity'] = $pack['entity'];
+					$array_packs[$key]['module'] = $module_slug;
+					$packs_added[$name_clean] = $name_clean;
 				}
 			}
-			$module_tmp_pack = substr($module_tmp_pack, 0, -1);
-			$module_file .= $module_tmp_pack;
-			$module_file .= '
-  ]';
 		}
-		$module_file .= '
- };';
-		return $module_file;
+		return $array_packs;
 	}
 	
 	function get_default_packs () {

@@ -64,6 +64,10 @@
 			<pre style="background-color:#F6F7F8; padding: 10px;">
 + YOUR_MODULE/
 	+ packs/
+	+ lang/
+	+ scripts/
+	+ templates/
+	+ styles/
 	+ assets/
 	   + icons/
 	   + musics/
@@ -72,6 +76,7 @@
 	   + scenes/
 	   + sounds/
 	   + tokens/
+	+ module.json
 			</pre>
 		</div>
         <div>
@@ -82,6 +87,7 @@
 					<input type="text" name="campaign_name" placeholder="Insert your module name *" required="required" style="width: 300px;" /><br />
 					<input type="text" name="creator_name" placeholder="Insert your name *" required="required" style="width: 300px;" /><br />
 					<input type="text" name="creator_url" placeholder="Insert your site url" style="width: 300px;" /><br />
+					<input type="text" name="minimum_core_version" placeholder="Minimum Core Version" style="width: 300px;" /><br />
 					<input type="text" name="compatible_core_version" placeholder="Compatible Core Version" style="width: 300px;" /><br />
 					<textarea name="campaign_description" placeholder="Module description" style="width: 500px; height: 200px;"></textarea>
 				</fieldset>

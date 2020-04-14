@@ -1,7 +1,7 @@
 # foundryvtt-campaingmaker
 https://foundryvtt.rodskin.com/
 
-# Assets folder
+# Created folders:
 ```
 + YOUR_MODULE/
     + assets/
@@ -14,6 +14,9 @@ https://foundryvtt.rodskin.com/
         + tokens/
     + lang/
     + packs/
+	+ scripts/
+	+ styles/
+	+ templates/
     + module.json
 ```
 
