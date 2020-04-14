@@ -69,8 +69,10 @@
 	"name": "' . $options['module_slug'] . '",   
 	"title": "' . $options['campaign_name'] . '",';
 		if (isset($options['campaign_description']) && trim($options['campaign_description']) != '') {
+			$description = str_replace("\r\n", '<br />', $options['campaign_description']);
+			$description = str_replace('"', '\"', $description);
 			$module_file .= '
-    "description": "' . str_replace("\r\n", '<br />', $options['campaign_description']) . '",';
+    "description": "' . $description . '",';
 		}
 		$module_file .= '
 	"author": "' . $options['creator_name'] . '",
