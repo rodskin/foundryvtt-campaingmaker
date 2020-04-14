@@ -86,14 +86,16 @@
 			$module_file .= '
 	"url": "' . $options['creator_url'] . '",';
 		}
-		$module_file .= '
+		$module_tmp_pack = '';
+		if (isset($options['packs']) && !empty($options['packs'])) {
+			$module_tmp_pack .= '
 	"packs": [';
-		$available_packs_entities = get_packs_entities();
-		foreach ($options['packs'] as $pack) {
-			if (trim($pack['label']) != '' && trim($pack['entity']) != '' && in_array($pack['entity'], $available_packs_entities)) {
-				$name_clean = urlencode(strtolower(preg_replace(array('/[^a-zA-Z0-9 -]/', '/[ -]+/', '/^-|-$/'), array(' ', '-', ''), remove_accents($pack['label']))));
-				if (trim($name_clean) != '' && array_key_exists($name_clean, $packs_added) == false) {
-					$module_file .= '
+			$available_packs_entities = get_packs_entities();
+			foreach ($options['packs'] as $pack) {
+				if (trim($pack['label']) != '' && trim($pack['entity']) != '' && in_array($pack['entity'], $available_packs_entities)) {
+					$name_clean = urlencode(strtolower(preg_replace(array('/[^a-zA-Z0-9 -]/', '/[ -]+/', '/^-|-$/'), array(' ', '-', ''), remove_accents($pack['label']))));
+					if (trim($name_clean) != '' && array_key_exists($name_clean, $packs_added) == false) {
+						$module_tmp_pack .= '
 	{
       "name": "' . $name_clean . '",
       "label": "' . $pack['label'] . '",
@@ -101,11 +103,13 @@
       "entity": "' . $pack['entity'] . '",
       "module": "' . $options['module_slug'] . '"
     },';
-					$packs_added[$name_clean] = $name_clean;
+						$packs_added[$name_clean] = $name_clean;
+					}
 				}
 			}
 		}
-		$module_file = substr($module_file, 0, -1);
+		$module_tmp_pack = substr($module_file, 0, -1);
+		$module_file .= $module_tmp_pack;
 		$module_file .= '
   ]
  };';
