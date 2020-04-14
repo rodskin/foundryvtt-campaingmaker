@@ -62,94 +62,51 @@
 	
 	
 	function create_module_file($options) {
+		$packs_added = array();
 		$module_file='{   
-   "name": "' . $options['module_slug'] . '",   
-   "title": "' . $options['campaign_name'] . '",   
-   "description": "' . str_replace("\r\n", '<br />', $options['campaign_description']) . '",
-   "author": "' . $options['creator_name'] . '",
-   "version": "1.0.0",
-   "minimumCoreVersion": "' . $options['min_version'] . '",
-   "url": "' . $options['creator_url'] . '",
-   "packs": [
-    {
-      "name": "equipment",
-      "label": "Equipment",
-      "path": "packs/equipment.db",
-      "entity": "Item",
-      "module": "' . $options['module_slug'] . '"
-    },
+	"name": "' . $options['module_slug'] . '",   
+	"title": "' . $options['campaign_name'] . '",';
+		if (isset($options['campaign_description']) && trim($options['campaign_description']) != '') {
+			$module_file .= '
+    "description": "' . str_replace("\r\n", '<br />', $options['campaign_description']) . '",';
+		}
+		$module_file .= '
+	"author": "' . $options['creator_name'] . '",
+	"version": "1.0.0",';
+		if (isset($options['compatible_core_version']) && trim($options['compatible_core_version']) != '') {
+			$module_file .= '
+	"compatibleCoreVersion": "' . $options['compatible_core_version'] . '",';
+		} else {
+			$module_file .= '
+	"compatibleCoreVersion": "' . $options['min_version'] . '",';
+		}
+		if (isset($options['creator_url']) && trim($options['creator_url']) != '') {
+			$module_file .= '
+	"url": "' . $options['creator_url'] . '",';
+		}
+		$module_file .= '
+	"packs": [';
+		$available_packs_entities = get_packs_entities();
+		foreach ($options['packs'] as $pack) {
+			if (trim($pack['label']) != '' && trim($pack['entity']) != '' && in_array($pack['entity'], $available_packs_entities)) {
+				$name_clean = urlencode(strtolower(preg_replace(array('/[^a-zA-Z0-9 -]/', '/[ -]+/', '/^-|-$/'), array(' ', '-', ''), remove_accents($pack['label']))));
+				if (trim($name_clean) != '' && array_key_exists($name_clean, $packs_added) == false) {
+					$module_file .= '
 	{
-      "name": "item",
-      "label": "Items",
-      "path": "packs/items.db",
-      "entity": "Item",
+      "name": "' . $name_clean . '",
+      "label": "' . $pack['label'] . '",
+      "path": "packs/' . $name_clean . '.db",
+      "entity": "' . $pack['entity'] . '",
       "module": "' . $options['module_slug'] . '"
-    },
-    {
-      "name": "spells",
-      "label": "Spells",
-      "path": "packs/spells.db",
-      "entity": "Item",
-      "module": "' . $options['module_slug'] . '"
-    },
-    {
-      "name": "weapons",
-      "label": "Weapons",
-      "path": "packs/weapons.db",
-      "entity": "Item",
-      "module": "' . $options['module_slug'] . '"
-    },
-	{
-      "name": "players",
-      "label": "Players",
-      "path": "packs/players.db",
-      "entity": "Actor",
-      "module": "' . $options['module_slug'] . '"
-    },
-	{
-      "name": "npc",
-      "label": "NPCs",
-      "path": "packs/npc.db",
-      "entity": "Actor",
-      "module": "' . $options['module_slug'] . '"
-    },
-	{
-      "name": "monsters",
-      "label": "Monsters",
-      "path": "packs/monsters.db",
-      "entity": "Actor",
-      "module": "' . $options['module_slug'] . '"
-    },
-	{
-      "name": "journals",
-      "label": "Journals",
-      "path": "packs/journals.db",
-      "entity": "JournalEntry",
-      "module": "' . $options['module_slug'] . '"
-    },
-	{
-      "name": "macros",
-      "label": "Macros",
-      "path": "packs/macros.db",
-      "entity": "Macro",
-      "module": "' . $options['module_slug'] . '"
-    },
-	{
-      "name": "playlists",
-      "label": "Playlists",
-      "path": "packs/playlists.db",
-      "entity": "Playlist",
-      "module": "' . $options['module_slug'] . '"
-    },
-	{
-      "name": "scenes",
-      "label": "Scenes",
-      "path": "packs/scenes.db",
-      "entity": "Scene",
-      "module": "' . $options['module_slug'] . '"
-    }
+    },';
+					$packs_added[$name_clean] = $name_clean;
+				}
+			}
+		}
+		$module_file = substr($module_file, 0, -1);
+		$module_file .= '
   ]
- }';
+ };';
 		return $module_file;
 	}
 	

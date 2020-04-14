@@ -7,9 +7,9 @@
 	$compatible_core_version = '';
 	
     if (isset($_POST) && !empty($_POST)) {
-		echo '<pre>';
-        print_r($_POST);
-		die();
+		//echo '<pre>';
+        //print_r($_POST);
+		//die();
 		$options = $_POST;
 		$options['min_version'] = $min_version;
         $uniq_id = uniqid('', true);
@@ -92,8 +92,8 @@
 							foreach ($default_packs as $key => $pack) {
 						?>
 						<div id="pack_<?php echo $key; ?>" class="pack_block">
-							<input type="text" name="pack[<?php echo $key; ?>][label]" class="pack_label" placeholder="Label" value="<?php echo $pack['label']; ?>" />
-							<select name="pack[<?php echo $key; ?>][entity]">
+							<input type="text" name="packs[<?php echo $key; ?>][label]" class="pack_label" placeholder="Label" value="<?php echo $pack['label']; ?>" />
+							<select name="packs[<?php echo $key; ?>][entity]">
 								<option value=""> -- select an entity --</option>
 								<?php
 									foreach ($packs_entities as $entity) {
@@ -135,8 +135,8 @@
 					var packs_wrapper = document.getElementById('packs_wrapper');
 					
 					var add_pack = '<div id="pack_' + next_id + '">';
-					add_pack += '<input type="text" name="pack[' + next_id + '][label]" class="pack_label" placeholder="Label" value="" /> ';
-					add_pack += '<select name="pack[' + next_id + '][entity]">';
+					add_pack += '<input type="text" name="packs[' + next_id + '][label]" class="pack_label" placeholder="Label" value="" /> ';
+					add_pack += '<select name="packs[' + next_id + '][entity]">';
 					add_pack += '<option value=""> -- select an entity --</option>';
 					<?php
 						foreach ($packs_entities as $entity) {
@@ -153,8 +153,6 @@
 					document.getElementById('hid_packs_number').value = next_id + 1;
 				}
 			}, false);
-
-			//document.getElementById("my-element").remove();
 		</script>
     </body>
 </html>
