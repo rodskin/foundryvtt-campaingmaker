@@ -1,5 +1,20 @@
 # foundryvtt-campaingmaker
+https://foundryvtt.rodskin.com/
 
+
+# Assets folder
++ YOUR_MODULE/
+	+ packs/
+	+ assets/
+	   + icons/
+	   + musics/
+	   + pictures/
+	   + portraits/
+	   + scenes/
+	   + sounds/
+	   + tokens/
+
+# default compendiums
 Creating a blank module with compendiums
 Actual compendiums:
 - Equipment
