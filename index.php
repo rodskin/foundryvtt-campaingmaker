@@ -1,10 +1,12 @@
 <?php
 	ini_set('default_charset', "UTF8");
 	setlocale(LC_ALL, 'en_US.UTF8');
+	$min_version = '0.5.3';
 	
     if (isset($_POST) && !empty($_POST)) {
         //print_r($_POST);
 		$options = $_POST;
+		$options['min_version'] = $min_version;
         $uniq_id = uniqid('', true);
         //echo $uniq_id;
         // module creation
@@ -63,6 +65,7 @@
 
     <body>
         <h1>Welcome to the Foundry Virtual Tabletop Campaign maker</h1>
+		<h3>Using version <strong><?php echo $min_version; ?></strong></h3>
 		<div>
 			This is a plugin creator to save or export your campaigns / characters etc
 			you will find in you module a skeleton of folders for your ressources:
@@ -91,7 +94,8 @@
             </form>
         </div>
 		<br />
-		<div><a href=" http://ko-fi.com/rodskin" target="_blank">you can buy me a coffee :)</a></div>
+		<div><a href="http://ko-fi.com/rodskin" target="_blank">you can buy me a coffee :)</a></div><br />
+		<div><a href="https://foundryvtt.com/" target="_blank">Foundry Virtual Tabletop site</a></div>
     </body>
 </html>
 <?php
@@ -140,7 +144,7 @@
    "description": "' . str_replace("\r\n", '<br />', $options['campaign_description']) . '",
    "author": "' . $options['creator_name'] . '",
    "version": "1.0.0",
-   "minimumCoreVersion": "0.5.3",
+   "minimumCoreVersion": "' . $options['min_version'] . '",
    "url": "' . $options['creator_url'] . '",
    "packs": [
     {
