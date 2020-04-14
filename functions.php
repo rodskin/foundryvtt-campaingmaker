@@ -42,6 +42,8 @@
 		mkdir($module_path);
 		$module_packs_path = $module_path . '/packs';
 		mkdir($module_packs_path);
+		$module_langs_path = $module_path . '/lang';
+		mkdir($module_langs_path);
 		$module_ressources_path = $module_path . '/assets';
 		mkdir($module_ressources_path);
 		$module_scenes_path = $module_ressources_path . '/scenes';
