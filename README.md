@@ -4,16 +4,16 @@ https://foundryvtt.rodskin.com/
 # Assets folder
 ```
 + YOUR_MODULE/
-	+ assets/
-	   + icons/
-	   + musics/
-	   + pictures/
-	   + portraits/
-	   + scenes/
-	   + sounds/
-	   + tokens/
+    + assets/
+        + icons/
+        + musics/
+        + pictures/
+        + portraits/
+        + scenes/
+        + sounds/
+        + tokens/
     + lang/
-	+ packs/
+    + packs/
     + module.json
 ```
 
