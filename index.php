@@ -87,6 +87,8 @@
 				</fieldset>
 				<fieldset>
 					<legend>Module Packs:</legend>
+					<div id="delete_all_packs">Delete all packs: <i id="delete_all" class="fa fa-trash-o" style="color:red;"></i></div>
+					<br />
 					<div id="packs_wrapper">
 						<?php
 							foreach ($default_packs as $key => $pack) {
@@ -126,7 +128,16 @@
 				if (event.target.matches('.fa-trash-o')) {
 					event.preventDefault();
 					var id = event.target.id.replace('delete_','');
-					document.getElementById("pack_" + id).remove();
+					if (id == 'all') {
+						var delete_all = confirm("Are you sure you want to delete all Packs ?");
+						if (delete_all == true) {
+							var packs_wrapper = document.getElementById('packs_wrapper');
+							packs_wrapper.innerHTML = '';
+							document.getElementById('hid_packs_number').value = 0;
+						}
+					} else {
+						document.getElementById("pack_" + id).remove();
+					}
 				}
 				if (event.target.matches('#add_pack')) {
 					event.preventDefault();

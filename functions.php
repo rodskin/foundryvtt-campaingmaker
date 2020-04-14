@@ -71,6 +71,7 @@
 		if (isset($options['campaign_description']) && trim($options['campaign_description']) != '') {
 			$description = str_replace("\r\n", '<br />', $options['campaign_description']);
 			$description = str_replace('"', '\"', $description);
+			//var_dump($description);die();
 			$module_file .= '
     "description": "' . $description . '",';
 		}
