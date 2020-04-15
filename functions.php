@@ -91,10 +91,6 @@
 		$module_array['packs'] = packs_for_file($options['packs'], $options['module_slug']);
 		$module_array['manifest'] = '';
 		$module_array['download'] = '';
-		
-		if ($options['easy_json'] == 0) {
-			return json_encode($module_array);
-		}
 
 		return pretty_json($module_array);
 	}

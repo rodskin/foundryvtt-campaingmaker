@@ -86,15 +86,11 @@
             <form action="" id="campaign_maker_form" method="post">
 				<input type="hidden" id="hid_packs_number" value="<?php echo count($default_packs); ?>" />
 				<fieldset>
-					<legend>Informations:</legend>
-					<div><span>Have an easy readable JSON ?</span> <input type="radio" name="easy_json" id="easy_json_yes" value="1" checked="checked" /><label for="easy_json_yes">Yes</label> <input type="radio" name="easy_json" id="easy_json_no" value="0" /><label for="easy_json_no">No</label></div>
-				</fieldset>
-				<fieldset>
 					<legend>Module Informations:</legend>
 					<input type="text" name="campaign_name" placeholder="Insert your module name *" required="required" style="width: 300px;" /><br />
 					<input type="text" name="creator_name" placeholder="Insert your name *" required="required" style="width: 300px;" /><br />
 					<input type="text" name="creator_url" placeholder="Insert your site url" style="width: 300px;" /><br />
-					<input type="text" name="minimum_core_version" placeholder="Minimum Core Version" style="width: 300px;" /><br />
+					<input type="text" name="minimum_core_version" placeholder="Minimum Core Version *" required="required" style="width: 300px;" /><br />
 					<input type="text" name="compatible_core_version" placeholder="Compatible Core Version" style="width: 300px;" /><br />
 					<textarea name="campaign_description" placeholder="Module description" style="width: 500px; height: 200px;"></textarea>
 				</fieldset>
