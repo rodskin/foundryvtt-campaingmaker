@@ -36,25 +36,31 @@
         return iconv('UTF-8', 'US-ASCII//TRANSLIT', $str);
     }
 	
+	function get_folders_to_create () {
+		$folders_to_create = array(
+			'packs' => 'packs',
+			'lang' => 'lang',
+			'scripts' => 'scripts',
+			'templates' => 'templates',
+			'styles' => 'styles',
+			'assets' => 'assets',
+			'assets/scenes' => 'assets/scenes',
+			'assets/tokens' => 'assets/tokens',
+			'assets/portraits' => 'assets/portraits',
+			'assets/pictures' => 'assets/pictures',
+			'assets/icons' => 'assets/icons',
+			'assets/sounds' => 'assets/sounds',
+			'assets/musics' => 'assets/musics'
+		);
+		sort($folders_to_create);
+		return $folders_to_create;
+	}
+	
 	function create_folders ($tmp_folder, $module_path) {
 		mkdir($tmp_folder);
 		//echo $module_slug;
 		mkdir($module_path);
-		$array_folders_to_create = array(
-			'packs',
-			'lang',
-			'scripts',
-			'templates',
-			'styles',
-			'assets',
-			'assets/scenes',
-			'assets/tokens',
-			'assets/portraits',
-			'assets/pictures',
-			'assets/icons',
-			'assets/sounds',
-			'assets/musics'
-		);
+		$array_folders_to_create = get_folders_to_create();
 		
 		foreach ($array_folders_to_create as $folder) {
 			mkdir($module_path . '/' . $folder);
@@ -74,19 +80,54 @@
 			$module_array['description'] = '';
 		}
 		$module_array['author'] = $options['creator_name'];
-		$module_array['version'] = $options['0.0.1'];
+		$module_array['version'] = '0.0.1';
 		$module_array['compatibleCoreVersion'] = (isset($options['compatible_core_version']) && trim($options['compatible_core_version']) != '') ? $options['compatible_core_version'] : '';
 		$module_array['minimumCoreVersion'] = $options['minimum_core_version'];
 		$module_array['url'] = (isset($options['creator_url']) && trim($options['creator_url']) != '') ? $options['creator_url'] : '';
 		$module_array['languages'] = languages_for_file();
 		$module_array['scripts'] = scripts_for_file();
 		$module_array['styles'] = styles_for_file();
-		$module_array['esmodules'] = esmodules_for_file;
+		$module_array['esmodules'] = esmodules_for_file();
 		$module_array['packs'] = packs_for_file($options['packs'], $options['module_slug']);
 		$module_array['manifest'] = '';
 		$module_array['download'] = '';
+		
+		if ($options['easy_json'] == 0) {
+			return json_encode($module_array);
+		}
 
-		return json_encode($module_array);
+		return pretty_json($module_array);
+	}
+	
+	function pretty_json ($array_to_convert) {
+		$tab = '    ';
+		//print_r($array_to_convert);
+		$return_string = '{' . "\n";
+		foreach ($array_to_convert as $key => $value) {
+			if (!is_array($value)) {
+				$return_string .= $tab . '"' . $key . '": ' . '"' . $value . '",' . "\n";
+			} else {
+				if (!empty($value)) {
+					$return_string .= $tab . '"' . $key . '": [' . "\n";
+					foreach ($value as $sub_key => $sub_value) {
+						$return_string .= $tab . $tab . '{' . "\n";
+						foreach ($sub_value as $end_key => $end_value) {
+							$return_string .= $tab . $tab . $tab . '"' . $end_key . '": ' . '"' . $end_value . '",' . "\n";
+						}
+						$return_string = substr($return_string, 0, -2);
+						$return_string .= "\n";
+						$return_string .= $tab . $tab . '},' . "\n";
+					}
+					$return_string = substr($return_string, 0, -2);
+					$return_string .= "\n";
+					$return_string .= $tab . '],' . "\n";
+				}
+			}
+		}
+		$return_string = substr($return_string, 0, -2);
+		$return_string .= "\n";
+		$return_string .= '}';
+		return $return_string;
 	}
 	
 	function languages_for_file () {

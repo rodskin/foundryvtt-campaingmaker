@@ -52,6 +52,7 @@
         <meta charset="UTF-8">
         <title>FoundryVTT Module Maker</title>
 		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+		<script type="text/javascript"  src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"  data-key="jquery" ></script>
     </head>
 
     <body>
@@ -79,9 +80,15 @@
 	+ module.json
 			</pre>
 		</div>
+		<p>Show image when hovering <a class="text-hover-image" href="#">this link</a> </p>
+		<p>This does work with every element that has <span class="text-hover-image"> a class of <em>"text-hover-image".</em></span></p>
         <div>
             <form action="" id="campaign_maker_form" method="post">
 				<input type="hidden" id="hid_packs_number" value="<?php echo count($default_packs); ?>" />
+				<fieldset>
+					<legend>Informations:</legend>
+					<div><span>Have an easy readable JSON ?</span> <input type="radio" name="easy_json" id="easy_json_yes" value="1" checked="checked" /><label for="easy_json_yes">Yes</label> <input type="radio" name="easy_json" id="easy_json_no" value="0" /><label for="easy_json_no">No</label></div>
+				</fieldset>
 				<fieldset>
 					<legend>Module Informations:</legend>
 					<input type="text" name="campaign_name" placeholder="Insert your module name *" required="required" style="width: 300px;" /><br />
@@ -90,6 +97,24 @@
 					<input type="text" name="minimum_core_version" placeholder="Minimum Core Version" style="width: 300px;" /><br />
 					<input type="text" name="compatible_core_version" placeholder="Compatible Core Version" style="width: 300px;" /><br />
 					<textarea name="campaign_description" placeholder="Module description" style="width: 500px; height: 200px;"></textarea>
+				</fieldset>
+				<fieldset>
+					<legend>Module Folders</legend>
+					<?php
+						$folders_to_create = get_folders_to_create();
+						unset($folders_to_create['packs']);
+					?>
+					<ul>
+						<li>Module root
+							<ul>
+					<?php
+						foreach ($folders_to_create as $folder_path) {
+							echo '<li><input type="checkbox" name="folders_to_create[]" value="' . $folder_path . '" checked="checked" /> ' . $folder_path . '</li>';
+						}
+					?>
+							</ul>
+						</li>
+					</ul>
 				</fieldset>
 				<fieldset>
 					<legend>Module Packs:</legend>
@@ -170,6 +195,31 @@
 					document.getElementById('hid_packs_number').value = next_id + 1;
 				}
 			}, false);
+			
+			jQuery(document).ready(function () {
+				var yOff = 0; // Horizontal position of image relative to mousepointer.0
+				var xOff = 0; // Vertical position of image relative to mousepointer
+				var pathToImage = "https://avatars2.githubusercontent.com/u/2463476?s=460&u=41efe1c7816e23291ab06582c5f51c6f82e0b6ac&v=4";
+
+				jQuery(".text-hover-image").hover(function (e) {
+					jQuery("body").append("<p id='image-when-hovering-text'><img src='" + pathToImage + "'/></p>");
+					jQuery("#image-when-hovering-text")
+						.css("position", "absolute")
+						.css("top", (e.pageY - yOff) + "px")
+						.css("left", (e.pageX + xOff) + "px")
+						.fadeIn("fast");
+				},
+
+				function () {
+					jQuery("#image-when-hovering-text").remove();
+				});
+
+				jQuery(".text-hover-image").mousemove(function (e) {
+					jQuery("#image-when-hovering-text")
+						.css("top", (e.pageY - yOff) + "px")
+						.css("left", (e.pageX + xOff) + "px");
+				});
+		});
 		</script>
     </body>
 </html>
