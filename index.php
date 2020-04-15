@@ -94,6 +94,7 @@
 					<input type="text" name="compatible_core_version" placeholder="Compatible Core Version" style="width: 300px;" /><br />
 					<textarea name="campaign_description" placeholder="Module description" style="width: 500px; height: 200px;"></textarea>
 				</fieldset>
+<?php /*				
 				<fieldset>
 					<legend>Module Folders</legend>
 					<?php
@@ -112,6 +113,7 @@
 						</li>
 					</ul>
 				</fieldset>
+*/ ?>
 				<fieldset>
 					<legend>Module Packs:</legend>
 					<div id="delete_all_packs">Delete all packs: <i id="delete_all" class="fa fa-trash-o" style="color:red;"></i></div>
