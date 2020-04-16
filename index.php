@@ -1,5 +1,6 @@
 <?php
 	require_once('functions.php');
+	require_once('classes/moduleMaker.php');
 	ini_set('default_charset', "UTF8");
 	setlocale(LC_ALL, 'en_US.UTF8');
 	$min_version = '0.5.3';
@@ -7,10 +8,13 @@
 	$compatible_core_version = '';
 	
     if (isset($_POST) && !empty($_POST)) {
-		//echo '<pre>';
-        //print_r($_POST);
-		//die();
+		
+		
 		$options = $_POST;
+		$moduleMaker = new moduleMaker($options);
+		echo '<pre>';
+        print_r($_POST);
+		die();
 		$options['min_version'] = $min_version;
         $uniq_id = uniqid('', true);
 		
@@ -23,8 +27,8 @@
 		$options['module_slug'] = $module_slug;
 		$module_path = $tmp_folder . '/' . $module_slug;
 		
-		create_folders($tmp_folder, $module_path);
-		
+		create_folders($tmp_folder, $module_path, $options['folders_to_create']);
+		die();
 		$module_file = create_module_file($options);
 		
 		file_put_contents($module_path . '/module.json', $module_file);
@@ -90,7 +94,7 @@
 					<input type="text" name="compatible_core_version" placeholder="Compatible Core Version" style="width: 300px;" /><br />
 					<textarea name="campaign_description" placeholder="Module description" style="width: 500px; height: 200px;"></textarea>
 				</fieldset>
-<?php /*				
+
 				<fieldset>
 					<legend>Module Folders</legend>
 					<?php
@@ -109,7 +113,7 @@
 						</li>
 					</ul>
 				</fieldset>
-*/ ?>
+
 				<fieldset>
 					<legend>Module Packs:</legend>
 					<div id="delete_all_packs">Delete all packs: <i id="delete_all" class="fa fa-trash-o" style="color:red;"></i></div>
