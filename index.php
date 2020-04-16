@@ -1,54 +1,16 @@
 <?php
-	require_once('functions.php');
 	require_once('classes/moduleMaker.php');
 	ini_set('default_charset', "UTF8");
 	setlocale(LC_ALL, 'en_US.UTF8');
-	$min_version = '0.5.3';
-	$default_min_version = '0.5.3';
-	$compatible_core_version = '';
+
+	$moduleMaker = new moduleMaker();
 	
     if (isset($_POST) && !empty($_POST)) {
-		
-		
 		$options = $_POST;
-		$moduleMaker = new moduleMaker($options);
-		echo '<pre>';
-        print_r($_POST);
-		die();
-		$options['min_version'] = $min_version;
-        $uniq_id = uniqid('', true);
-		
-		$module_slug = strtolower(preg_replace(array('/[^a-zA-Z0-9 -]/', '/[ -]+/', '/^-|-$/'), array(' ', '-', ''), remove_accents($_POST['campaign_name'])));
-		
-        //echo $uniq_id;
-        // module creation
-		$tmp_folder = '/tmp/' . $uniq_id;
-		
-		$options['module_slug'] = $module_slug;
-		$module_path = $tmp_folder . '/' . $module_slug;
-		
-		create_folders($tmp_folder, $module_path, $options['folders_to_create']);
-		die();
-		$module_file = create_module_file($options);
-		
-		file_put_contents($module_path . '/module.json', $module_file);
-		
-		$zip_name = '/tmp/' . $uniq_id . '.zip';
-		zip($tmp_folder . '/', $zip_name);
-		
-		//echo filesize('/tmp/' . $uniq_id . '.zip');
-		header('Content-Type: application/zip');
-		header('Content-Disposition: attachment; filename="' . basename($zip_name) . '"');
-		header('Content-Length: ' . filesize($zip_name));
-
-		flush();
-		@readfile($zip_name);
-		rrmdir($tmp_folder);
-		unlink($zip_name);
-		
+		$moduleMaker->createModule($_POST);
     }
-	$default_packs = get_default_packs();
-	$packs_entities = get_packs_entities();
+	$default_packs = $moduleMaker->get_default_packs();
+	$packs_entities = $moduleMaker->get_packs_entities();
 ?>
 <!DOCTYPE html>
 <html>
@@ -61,7 +23,7 @@
 
     <body>
         <h1>Welcome to the Foundry Virtual Tabletop Module maker</h1>
-		<h3>Using version <strong><?php echo $min_version; ?></strong></h3>
+		<h3>Using version <strong><?php echo $moduleMaker->minVersion; ?></strong></h3>
 		<div>
 			This is a plugin creator to save or export your characters, items, scenes, journal entries etc...
 			You will find in your downloaded module a skeleton of folders for all your ressources:
@@ -83,30 +45,54 @@
 	   + tokens/
 	+ module.json
 			</pre>
-            <form action="" id="campaign_maker_form" method="post">
+            <form action="" id="module_maker_form" method="post">
 				<input type="hidden" id="hid_packs_number" value="<?php echo count($default_packs); ?>" />
 				<fieldset>
 					<legend>Module Informations:</legend>
-					<input type="text" name="campaign_name" placeholder="Insert your module name *" required="required" style="width: 300px;" /><br />
+					<input type="text" name="module_name" placeholder="Insert your module name *" required="required" style="width: 300px;" /><br />
 					<input type="text" name="creator_name" placeholder="Insert your name *" required="required" style="width: 300px;" /><br />
 					<input type="text" name="creator_url" placeholder="Insert your site url" style="width: 300px;" /><br />
 					<input type="text" name="minimum_core_version" placeholder="Minimum Core Version *" required="required" style="width: 300px;" /><br />
 					<input type="text" name="compatible_core_version" placeholder="Compatible Core Version" style="width: 300px;" /><br />
-					<textarea name="campaign_description" placeholder="Module description" style="width: 500px; height: 200px;"></textarea>
+					<textarea name="module_description" placeholder="Module description" style="width: 500px; height: 200px;"></textarea>
 				</fieldset>
 
 				<fieldset>
 					<legend>Module Folders</legend>
 					<?php
-						$folders_to_create = get_folders_to_create();
-						unset($folders_to_create['packs']);
+						$folders_to_create = $moduleMaker->foldersToCreate;
 					?>
 					<ul>
 						<li>Module root
 							<ul>
 					<?php
-						foreach ($folders_to_create as $folder_path) {
-							echo '<li><input type="checkbox" name="folders_to_create[]" value="' . $folder_path . '" checked="checked" /> ' . $folder_path . '</li>';
+						foreach ($folders_to_create as $folder) {
+							$disabled = '';
+							if (isset($folder['deletable_on_front']) && $folder['deletable_on_front'] == false) {
+								$disabled = ' disabled="disabled"';
+							}
+							echo '<li>';
+							echo '<input type="checkbox" id="folder_' . $folder['name'] . '" name="folders_to_create[]" value="' . $folder['name'] . '" checked="checked"' . $disabled . ' /> ' . $folder['name'];
+							if (isset($folder['deletable_on_front']) && $folder['deletable_on_front'] == false) {
+									echo '<input type="hidden" id="hid_folder_' . $folder['name'] . '" name="folders_to_create[]" value="' . $folder['name'] . '" />';
+								}
+							if (isset($folder['children'])) {
+								echo '<ul>';
+								foreach ($folder['children'] as $child) {
+									$disabled = '';
+									if (isset($child['deletable_on_front']) && $child['deletable_on_front'] == false) {
+										$disabled = ' disabled="disabled"';
+									}
+									echo '<li>';
+									echo '<input type="checkbox" id="folder_' . $folder['name'] . '/' . $child['name'] . '" name="folders_to_create[]" value="' . $folder['name'] . '/' . $child['name'] . '" checked="checked"' . $disabled . ' /> ' . $child['name'];
+									if (isset($child['deletable_on_front']) && $child['deletable_on_front'] == false) {
+										echo '<input type="hidden" id="hid_folder_' . $folder['name'] . '/' . $child['name'] . '" name="folders_to_create[]" value="' . $folder['name'] . '/' . $child['name'] . '" />';
+									}
+									echo '</li>';
+								}
+								echo '</ul>';
+							}
+							echo '</li>';
 						}
 					?>
 							</ul>
@@ -124,7 +110,7 @@
 						?>
 						<div id="pack_<?php echo $key; ?>" class="pack_block">
 							<input type="text" name="packs[<?php echo $key; ?>][label]" class="pack_label" placeholder="Label" value="<?php echo $pack['label']; ?>" />
-							<select name="packs[<?php echo $key; ?>][entity]">
+							<select class="pack_entity" name="packs[<?php echo $key; ?>][entity]">
 								<option value=""> -- select an entity --</option>
 								<?php
 									foreach ($packs_entities as $entity) {
@@ -150,8 +136,37 @@
 		<br />
 		<div><a href="http://ko-fi.com/rodskin" target="_blank">you can buy me a coffee :)</a></div><br />
 		<div><a href="https://foundryvtt.com/" target="_blank">Foundry Virtual Tabletop Official Site</a></div>
+		
 		<script type="text/javascript">
 			var packs_wrapper_html = packs_wrapper.innerHTML;
+			
+			/*var form_el = document.getElementById("module_maker_form");
+			form_el.addEventListener("submit", function(evt) {
+				evt.preventDefault();
+				var packsLabelNumber = 0;
+				var packsEntityNumber = 0;
+				
+				var packsByLabel = document.getElementsByClassName('pack_label');
+				Array.prototype.forEach.call(packsByLabel, function(el) {
+					if (el.value.trim() != '') {
+						packsLabelNumber ++;
+					} else {
+						el.parentElement.remove();
+					}
+				});
+				
+				var packsByEntity = document.getElementsByClassName('pack_entity');
+				Array.prototype.forEach.call(packsByEntity, function(el) {
+					if (el.value.trim() != '') {
+						packsEntityNumber ++;
+					} else {
+						el.parentElement.remove();
+					}
+				});
+				//return true;
+				document.getElementById("module_maker_form").submit();
+			});*/
+			
 			
 			document.addEventListener('click', function (event) {
 				if (event.target.matches('.fa-trash-o')) {
@@ -163,6 +178,8 @@
 							var packs_wrapper = document.getElementById('packs_wrapper');
 							packs_wrapper.innerHTML = '';
 							document.getElementById('hid_packs_number').value = 0;
+							document.getElementById('folder_packs').checked = false;
+							document.getElementById('hid_folder_packs').value = '';
 						}
 					} else {
 						document.getElementById("pack_" + id).remove();
@@ -170,6 +187,8 @@
 				}
 				if (event.target.matches('#add_pack')) {
 					event.preventDefault();
+					document.getElementById('folder_packs').checked = true;
+					document.getElementById('hid_folder_packs').value = 'packs';
 					var next_id = parseInt(document.getElementById('hid_packs_number').value);
 					
 					var packs_wrapper = document.getElementById('packs_wrapper');

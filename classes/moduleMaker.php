@@ -1,36 +1,82 @@
 <?php
 class moduleMaker {
 	public $moduleSlug = '';
-	public $min_version = '0.5.3';
+	public $minVersion = '0.5.3';
 	public $compatible_core_version = '';
 	public $uniqId;
+	public $tmpFolder = '';
+	public $modulePath = '';
 	
-	public $folders_to_create = array(
-		'packs' => 'packs',
-		'lang' => 'lang',
-		'scripts' => 'scripts',
-		'templates' => 'templates',
-		'styles' => 'styles',
-		'esmodules' => 'esmodules',
-		'assets' => 'assets',
-		'assets/scenes' => 'assets/scenes',
-		'assets/tokens' => 'assets/tokens',
-		'assets/portraits' => 'assets/portraits',
-		'assets/pictures' => 'assets/pictures',
-		'assets/icons' => 'assets/icons',
-		'assets/sounds' => 'assets/sounds',
-		'assets/musics' => 'assets/musics'
+	public $foldersToCreate = array(
+		'packs' => array(
+			'name' => 'packs',
+			'json_entry' => true,
+			'deletable_on_front' => false
+		),
+		'lang' => array(
+			'name' => 'lang',
+			'json_entry' => true
+		),
+		'scripts' => array(
+			'name' => 'scripts',
+			'json_entry' => true
+		),
+		'templates' => array(
+			'name' => 'templates',
+			'json_entry' => false
+		),
+		'styles' => array(
+			'name' => 'styles',
+			'json_entry' => true
+		),
+		'esmodules' => array(
+			'name' => 'esmodules',
+			'json_entry' => true
+		),
+		'assets' => array(
+			'name' => 'assets',
+			'json_entry' => false,
+			'children' => array(
+				'scenes' => array(
+					'name' => 'scenes',
+					'json_entry' => false
+				),
+				'tokens' => array(
+					'name' => 'tokens',
+					'json_entry' => false
+				),
+				'portraits' => array(
+					'name' => 'portraits',
+					'json_entry' => false
+				),
+				'pictures' => array(
+					'name' => 'pictures',
+					'json_entry' => false
+				),
+				'icons' => array(
+					'name' => 'icons',
+					'json_entry' => false
+				),
+				'sounds' => array(
+					'name' => 'sounds',
+					'json_entry' => false
+				),
+				'musics' => array(
+					'name' => 'musics',
+					'json_entry' => false
+				),
+			)
+		)
 	);
 	
-	public function __construct ($options)
+	public function __construct ()
 	{
-		$this->uniqId = uniqid('', true);
-		$this->moduleSlug = $this->createModuleSlug($options['module_name']);
+		ksort($this->foldersToCreate);
 	}
 	
 	public function createModuleSlug ($module_name)
 	{
-		return strtolower(preg_replace(array('/[^a-zA-Z0-9 -]/', '/[ -]+/', '/^-|-$/'), array(' ', '-', ''), remove_accents($module_name)));
+		return strtolower(preg_replace(array('/[^a-zA-Z0-9 -]/', '/[ -]+/', '/^-|-$/'), array(' ', '-', ''), $this->remove_accents($module_name)));
 	}
 	
 	public function remove_accents ($str)
@@ -41,24 +87,24 @@ class moduleMaker {
         return iconv('UTF-8', 'US-ASCII//TRANSLIT', $str);
     }
 	
-	public function create_folders ($module_path, $folders_to_create = array())
+	public function create_folders ($folders_to_create = array())
 	{
-		$tmp_folder = '/tmp/' . $this->uniqId;
-		mkdir($tmp_folder);
+		mkdir($this->tmpFolder);
 		//echo $module_slug;
-		mkdir($module_path);
+		mkdir($this->modulePath);
 		
 		foreach ($folders_to_create as $folder) {
-			mkdir($module_path . '/' . $folder);
+			if (isset($this->foldersToCreate[$folder])) {
+				mkdir($this->modulePath . '/' . $folder);
+			}
 		}
 	}
 	
 	public function create_module_file($options) {
-		$packs_added = array();
 		$module_array = array();
-		$module_array['name'] = $options['module_slug'];
-		$module_array['title'] = $options['campaign_name'];
-		$module_array['description'] = $this->beautyDescription($options['campaign_description']);
+		$module_array['name'] = $this->moduleSlug;
+		$module_array['title'] = $options['module_name'];
+		$module_array['description'] = $this->beautyDescription($options['module_description']);
 
 		$module_array['author'] = $options['creator_name'];
 		$module_array['version'] = '0.0.1';
@@ -67,14 +113,12 @@ class moduleMaker {
 		$module_array['url'] = (isset($options['creator_url']) && trim($options['creator_url']) != '') ? $options['creator_url'] : '';
 		
 		if (isset($options['folders_to_create']) && !empty($options['folders_to_create'])) {
-			foreach ($options['folders_to_create'] as $folder_name) {
-				if (strpos($folder_name, 'assets') === 0) {
-					$item_for_files = $folder_name . '_for_file';
-					$module_array['folder_name'] = $this->$item_for_files($options['folder_name']);
-					/*$module_array['scripts'] = $this->scripts_for_file();
-					$module_array['styles'] = $this->styles_for_file();
-					$module_array['esmodules'] = $this->esmodules_for_file();
-					$module_array['packs'] = $this->packs_for_file($options['packs']);*/
+			foreach ($options['folders_to_create'] as $folder) {
+				if (isset($this->foldersToCreate[$folder]) && $this->foldersToCreate[$folder]['json_entry'] == true) {
+					$item_for_files = $folder . '_for_file';
+					if (isset($options[$folder])) {
+						$module_array[$folder] = $this->$item_for_files($options[$folder]);
+					}
 				}
 			}
 		}
@@ -115,9 +159,9 @@ class moduleMaker {
 		return $return_string;
 	}
 	
-	public function languages_for_file ($languages = array()) {
+	public function lang_for_file ($lang = array()) {
 		// @TODO ?
-		return $languages;
+		return $lang;
 	}
 	
 	public function scripts_for_file ($scripts = array()) {
@@ -222,7 +266,7 @@ class moduleMaker {
 	
 	public function beautyPackName($label)
 	{
-		return urlencode(strtolower(preg_replace(array('/[^a-zA-Z0-9 -]/', '/[ -]+/', '/^-|-$/'), array(' ', '-', ''), $this->remove_accents($label))))
+		return urlencode(strtolower(preg_replace(array('/[^a-zA-Z0-9 -]/', '/[ -]+/', '/^-|-$/'), array(' ', '-', ''), $this->remove_accents($label))));
 	}
 	
 	public function zip($source, $destination){
@@ -269,7 +313,7 @@ class moduleMaker {
 			if (( $file != '.' ) && ( $file != '..' )) {
 				$full = $src . '/' . $file;
 				if ( is_dir($full) ) {
-					rrmdir($full);
+					$this->rrmdir($full);
 				}
 				else {
 					unlink($full);
@@ -278,5 +322,51 @@ class moduleMaker {
 		}
 		closedir($dir);
 		rmdir($src);
+	}
+	
+	public function createModule ($options)
+	{
+		$this->uniqId = uniqid('', true);
+		$this->moduleSlug = $this->createModuleSlug($options['module_name']);
+        $uniq_id = uniqid('', true);
+		
+        //echo $uniq_id;
+        // module creation
+		$this->tmpFolder = '/tmp/' . $uniq_id;
+		
+		$this->modulePath = $this->tmpFolder . '/' . $this->moduleSlug;
+		
+		foreach ($options['folders_to_create'] as $folder) {
+			if (isset($options[$folder])) {
+				$num = 0;
+				foreach ($options[$folder] as $value) {
+					if (trim($value['label']) != '' && $value['entity'] != '') {
+						$num ++;
+					}
+				}
+				if ($num == 0) {
+					unset($options['folders_to_create'][$folder]);
+				}
+			}
+		}
+		
+		$this->create_folders($options['folders_to_create']);
+		//die();
+		$module_file = $this->create_module_file($options);
+		
+		file_put_contents($this->modulePath . '/module.json', $module_file);
+		
+		$zip_name = $this->tmpFolder . '.zip';
+		$this->zip($this->tmpFolder . '/', $zip_name);
+		
+		//echo filesize('/tmp/' . $uniq_id . '.zip');
+		header('Content-Type: application/zip');
+		header('Content-Disposition: attachment; filename="' . basename($zip_name) . '"');
+		header('Content-Length: ' . filesize($zip_name));
+
+		flush();
+		@readfile($zip_name);
+		$this->rrmdir($this->tmpFolder);
+		unlink($zip_name);
 	}
 }
