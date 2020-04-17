@@ -1,7 +1,7 @@
 <?php
 class moduleMaker {
 	public $moduleSlug = '';
-	public $minVersion = '0.5.3';
+	public $minVersion = '0.5.5';
 	public $compatible_core_version = '';
 	public $uniqId;
 	public $tmpFolder = '';
